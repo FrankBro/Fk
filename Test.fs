@@ -8,9 +8,17 @@ open Infer
 open TestUtil
 
 [<Fact>]
-let ``Integer`` () =
+let ``An integer`` () =
     testLine
         "3"
         (POk [IntExpr 3])
         (IOk (Some IntType))
         (EOk (Some (IntValue 3)))
+
+[<Fact>]
+let ``Add two integers`` () =
+    testLine
+        "3+4"
+        (POk [IntExpr 3; Plus; IntExpr 4])
+        (IOk (Some IntType))
+        (EOk (Some (IntValue 7)))
