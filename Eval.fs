@@ -14,6 +14,10 @@ let evalPlus rhs exprs =
         match lhs, rhs with
         | Int lhs, IntValue rhs ->
             IntValue (lhs + rhs), exprs
+        | Int lhs, IntListValue rhs ->
+            IntListValue (List.map (fun rhs -> lhs + rhs) rhs), exprs
+        | IntList lhs, IntValue rhs ->
+            IntListValue (List.map (fun lhs -> lhs + rhs) lhs), exprs
         | _ ->
             failwithf "Dyadic with %A and %A" lhs rhs
     | expr :: _ ->

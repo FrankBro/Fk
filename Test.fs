@@ -30,3 +30,19 @@ let ``An integer list`` () =
         (POk [IntList [1;2;3]])
         (IOk (Some IntListType))
         (EOk (Some (IntListValue [1;2;3])))
+
+[<Fact>]
+let ``Add an integer to an integer list`` () =
+    testLine
+        "3+1 2 3"
+        (POk [Int 3; Plus; IntList [1;2;3]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [4;5;6])))
+
+[<Fact>]
+let ``Add an integer list to an integer`` () =
+    testLine
+        "1 2 3+3"
+        (POk [IntList [1;2;3]; Plus; Int 3])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [4;5;6])))

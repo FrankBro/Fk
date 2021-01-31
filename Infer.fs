@@ -12,8 +12,12 @@ let inferPlus rhs exprs =
         failwith "flip"
     | lhs :: exprs when isValueExpr lhs ->
         match lhs, rhs with
-        | Int lhs, IntType ->
+        | Int _, IntType ->
             IntType, exprs
+        | Int _, IntListType ->
+            IntListType, exprs
+        | IntList _, IntType ->
+            IntListType, exprs
         | _ ->
             failwithf "Dyadic with %A and %A" lhs rhs
     | expr :: _ ->
