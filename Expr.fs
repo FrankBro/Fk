@@ -1,12 +1,12 @@
 module Expr
 
 type Expr =
-    | IntExpr of int
-    // | IntValues of int[]
+    | Int of int
+    | IntList of int list
     | Plus
 
 let isValueExpr expr =
     match expr with
-    | IntExpr _ -> true
-    // | IntValues _ -> true
+    | Int _ -> true
+    | IntList _ -> true
     | Plus -> false

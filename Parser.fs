@@ -9,14 +9,18 @@ type Parser<'t> = Parser<'t, unit>
 
 // let nl = pchar '\n'
 let ws = many (pchar ' ')
+let ws1 = many1 (pchar ' ')
 
 let str s = pstring s
 
-let parseIntExpr = pint32 |>> IntExpr
+let parseIntList = pint32 .>> ws1 .>>. sepBy1 pint32 ws1 |>> fun (x, xs) -> IntList (x :: xs)
+
+let parseInt = pint32 |>> Int
 
 let parseExpr : Parser<Expr> = choice [
     str "+" >>% Plus
-    parseIntExpr
+    attempt parseIntList
+    parseInt
 ]
 
 let readOrThrow parser input =
