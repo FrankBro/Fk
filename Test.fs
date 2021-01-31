@@ -32,6 +32,14 @@ let ``An integer list`` () =
         (EOk (Some (IntListValue [1;2;3])))
 
 [<Fact>]
+let ``An integer list with parens`` () =
+    testLine
+        "( 1 ;2; 3 )"
+        (POk [IntList [1;2;3]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [1;2;3])))
+
+[<Fact>]
 let ``Add an integer to an integer list`` () =
     testLine
         "3+1 2 3"

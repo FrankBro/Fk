@@ -13,7 +13,17 @@ let ws1 = many1 (pchar ' ')
 
 let str s = pstring s
 
-let parseIntList = pint32 .>> ws1 .>>. sepBy1 pint32 ws1 |>> fun (x, xs) -> IntList (x :: xs)
+let parseParenIntList =
+    let value = pint32 .>> ws
+    let sep = pchar ';' .>> ws
+    between (pchar '(' >>. ws) (pchar ')') (value .>> sep .>>. sepBy1 value sep)
+    |>> fun (x, xs) -> IntList (x :: xs)
+
+let parseSpaceIntList = pint32 .>> ws1 .>>. sepBy1 pint32 ws1 |>> fun (x, xs) -> IntList (x :: xs)
+
+let parseIntList =
+    attempt parseParenIntList
+    <|> parseSpaceIntList
 
 let parseInt = pint32 |>> Int
 
