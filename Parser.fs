@@ -7,6 +7,8 @@ open Expr
 
 type Parser<'t> = Parser<'t, unit>
 
+let sepBy2 p sep = p .>> sep .>>. sepBy1 p sep |>> List.Cons
+
 // let nl = pchar '\n'
 let ws = many (pchar ' ')
 let ws1 = many1 (pchar ' ')
@@ -16,10 +18,10 @@ let str s = pstring s
 let parseParenIntList =
     let value = pint32 .>> ws
     let sep = pchar ';' .>> ws
-    between (pchar '(' >>. ws) (pchar ')') (value .>> sep .>>. sepBy1 value sep)
-    |>> fun (x, xs) -> IntList (x :: xs)
+    between (pchar '(' >>. ws) (pchar ')') (sepBy2 value sep)
+    |>> IntList
 
-let parseSpaceIntList = pint32 .>> ws1 .>>. sepBy1 pint32 ws1 |>> fun (x, xs) -> IntList (x :: xs)
+let parseSpaceIntList = sepBy2 pint32 ws1 |>> IntList
 
 let parseIntList =
     attempt parseParenIntList
