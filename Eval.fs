@@ -43,6 +43,17 @@ let evalPlus env rhs exprs =
             IntListValue (List.map (fun rhs -> lhs + rhs) rhs), exprs
         | IntList lhs, IntValue rhs ->
             IntListValue (List.map (fun lhs -> lhs + rhs) lhs), exprs
+        | IntList lhs, IntListValue rhs ->
+            if List.length lhs <> List.length rhs then
+                raise (FkException (LengthMismatch (IntList lhs, Plus, IntListValue rhs)))
+            else
+                let value =
+                    List.zip lhs rhs
+                    |> List.map (fun (lhs, rhs) ->
+                        lhs + rhs
+                    )
+                    |> IntListValue
+                value, exprs
         | _ ->
             failwithf "Dyadic with %A and %A" lhs rhs
     | expr :: _ ->

@@ -8,5 +8,6 @@ type FkError =
     | UndefinedVar of string
     | WrongType of expected: Type * actual: Type
     | WrongValue of expected: Type * actual: Value
+    | LengthMismatch of lhs: Expr * op: Expr * rhs: Value
 
 exception FkException of FkError

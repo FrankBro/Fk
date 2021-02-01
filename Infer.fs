@@ -44,6 +44,8 @@ let inferPlus env rhs exprs =
             IntListType, exprs
         | IntList _, IntType ->
             IntListType, exprs
+        | IntList _, IntListType ->
+            IntListType, exprs
         | _ ->
             failwithf "Dyadic with %A and %A" lhs rhs
     | expr :: _ ->

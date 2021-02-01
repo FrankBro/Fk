@@ -126,3 +126,11 @@ let ``Int plus int list var`` () =
         (POk [[Var "a"; Colon; IntList [3; 4]]; [Int 4; Plus; Var "a"]])
         (IOk (Some IntListType))
         (EOk (Some (IntListValue [7; 8])))
+
+[<Fact>]
+let ``Int list plus int list`` () =
+    testLine
+        "1 2 3+4 5 6"
+        (POk [[IntList [1; 2; 3]; Plus; IntList [4; 5; 6]]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [5; 7; 9])))
