@@ -6,6 +6,8 @@ let main argv =
     let input = "3+3"
     let parsed = Parser.readLine input
     printfn "%A" parsed
+    let infered = Infer.infer parsed
+    printfn "%A" infered
     let evaled = Eval.eval parsed
     printfn "%A" evaled
     0 // return an integer exit code

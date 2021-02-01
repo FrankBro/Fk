@@ -1,5 +1,7 @@
 module Parser
 
+open System
+
 open FParsec
 open FParsec.CharParsers
 
@@ -29,10 +31,20 @@ let parseIntList =
 
 let parseInt = pint32 |>> Int
 
+let parseVar =
+    letter .>>. many (letter <|> digit)
+    |>> fun (first, rest) ->
+        let name = String(Array.ofList (first :: rest))
+        Var name
+    
+
 let parseExpr : Parser<Expr> = choice [
+    str ";" >>% SemiColon
+    str ":" >>% Colon
     str "+" >>% Plus
     attempt parseIntList
     parseInt
+    parseVar
 ]
 
 let readOrThrow parser input =
@@ -41,4 +53,14 @@ let readOrThrow parser input =
     | ParserResult.Failure (se, e, state) -> failwith se
 let readLine input =
     let parser = ws >>. sepEndBy parseExpr ws
-    readOrThrow parser input
+    let exprs = readOrThrow parser input
+    let rec loop output input =
+        match List.tryFindIndex ((=) SemiColon) input with
+        | None -> 
+            input :: output
+            |> List.rev
+        | Some index ->
+            let line, rest = List.splitAt index input
+            loop (line :: output) (List.tail rest)
+    loop [] exprs
+

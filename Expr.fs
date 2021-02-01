@@ -3,10 +3,24 @@ module Expr
 type Expr =
     | Int of int
     | IntList of int list
+    | Var of string
+    | SemiColon
+    | Colon
     | Plus
 
 let isValueExpr expr =
     match expr with
-    | Int _ -> true
+    | Int _ 
     | IntList _ -> true
+    | Var _
+    | SemiColon
+    | Colon
     | Plus -> false
+
+type Type =
+    | IntType
+    | IntListType
+
+type Value =
+    | IntValue of int
+    | IntListValue of int list

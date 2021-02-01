@@ -9,7 +9,7 @@ open Infer
 open Parser
 
 type ParserResult =
-    | POk of Expr list
+    | POk of Expr list list
     | PSkip
     | PFail of FkError
 

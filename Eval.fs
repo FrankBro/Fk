@@ -1,17 +1,42 @@
 module Eval
 
+open Error
 open Expr
 
-type Value =
-    | IntValue of int
-    | IntListValue of int list
+let evalColon env rhs exprs =
+    match exprs with
+    | [] ->
+        failwith ":x"
+    | Var name :: exprs ->
+        let env = Map.add name rhs env
+        env, exprs
+    | lhs :: _ ->
+        raise (FkException (UnexpectedLhsValue (lhs, Colon, rhs)))
 
-let evalPlus rhs exprs =
+let evalPlus env rhs exprs =
     match exprs with
     | [] ->
         failwith "flip"
     | lhs :: exprs when isValueExpr lhs ->
         match lhs, rhs with
+        | Var name, IntValue rhs ->
+            match Map.tryFind name env with
+            | None ->
+                raise (FkException (UndefinedVar name))
+            | Some (IntValue lhs) ->
+                IntValue (lhs + rhs), exprs
+            | Some (IntListValue lhs) ->
+                IntListValue (List.map (fun lhs -> lhs + rhs) lhs), exprs
+            | Some lhs ->
+                raise (FkException (WrongValue (IntType, lhs)))
+        | Var name, IntListValue rhs ->
+            match Map.tryFind name env with
+            | None ->
+                raise (FkException (UndefinedVar name))
+            | Some (IntValue lhs) ->
+                IntListValue (List.map (fun rhs -> lhs + rhs) rhs), exprs
+            | Some lhs ->
+                raise (FkException (WrongValue (IntType, lhs)))
         | Int lhs, IntValue rhs ->
             IntValue (lhs + rhs), exprs
         | Int lhs, IntListValue rhs ->
@@ -23,21 +48,40 @@ let evalPlus rhs exprs =
     | expr :: _ ->
         failwithf "Unexpected: %A" expr
 
-let eval exprs = 
-    let rec loop value exprs =
+let evalLine env exprs = 
+    let rec loop env rhs exprs =
         match exprs with
-        | [] -> value
+        | [] -> env, rhs
         | expr :: exprs ->
-            match value, expr with
+            match rhs, expr with
             | Some _, expr when isValueExpr expr ->
                 failwith "value but value is already set"
             | None, Int i -> 
-                loop (Some (IntValue i)) exprs
+                loop env (Some (IntValue i)) exprs
             | None, IntList is ->
-                loop (Some (IntListValue is)) exprs
+                loop env (Some (IntListValue is)) exprs
+            | None, Var name ->
+                match Map.tryFind name env with
+                | None ->
+                    raise (FkException (UndefinedVar name))
+                | Some rhs ->
+                    loop env (Some rhs) exprs
+            | Some rhs, Colon ->
+                let env, exprs = evalColon env rhs exprs
+                loop env None exprs
             | Some rhs, Plus ->
-                let value, exprs = evalPlus rhs exprs
-                loop (Some value) exprs
+                let value, exprs = evalPlus env rhs exprs
+                loop env (Some value) exprs
     exprs
     |> List.rev
-    |> loop None
+    |> loop env None
+
+let eval lines =
+    let rec loop env value lines =
+        match lines with
+        | [] -> value
+        | line :: lines ->
+            let env, value = evalLine env line
+            loop env value lines
+    lines
+    |> loop Map.empty None
