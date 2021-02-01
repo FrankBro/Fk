@@ -64,7 +64,7 @@ let ``Semicolon`` () =
         (EOk (Some (IntValue 4)))
 
 [<Fact>]
-let ``Var set and get`` () =
+let ``Int var set and get`` () =
     testLine
         "a:3;a"
         (POk [[Var "a"; Colon; Int 3]; [Var "a"]])
@@ -72,7 +72,7 @@ let ``Var set and get`` () =
         (EOk (Some (IntValue 3)))
 
 [<Fact>]
-let ``Var plus int`` () =
+let ``Int var plus int`` () =
     testLine
         "a:3;a+4"
         (POk [[Var "a"; Colon; Int 3]; [Var "a"; Plus; Int 4]])
@@ -80,9 +80,49 @@ let ``Var plus int`` () =
         (EOk (Some (IntValue 7)))
 
 [<Fact>]
-let ``Int plus var`` () =
+let ``Int plus int var`` () =
     testLine
         "a:3;4+a"
         (POk [[Var "a"; Colon; Int 3]; [Int 4; Plus; Var "a"]])
         (IOk (Some IntType))
         (EOk (Some (IntValue 7)))
+
+[<Fact>]
+let ``Int var plus int list`` () =
+    testLine
+        "a:3;a+4 5"
+        (POk [[Var "a"; Colon; Int 3]; [Var "a"; Plus; IntList [4; 5]]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [7; 8])))
+
+[<Fact>]
+let ``Int list plus int var`` () =
+    testLine
+        "a:3;4 5+a"
+        (POk [[Var "a"; Colon; Int 3]; [IntList  [4; 5]; Plus; Var "a"]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [7; 8])))
+
+[<Fact>]
+let ``Int list var set and get`` () =
+    testLine
+        "a:3 4 5;a"
+        (POk [[Var "a"; Colon; IntList [3; 4; 5]]; [Var "a"]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [3; 4; 5])))
+
+[<Fact>]
+let ``Int list var plus int`` () =
+    testLine
+        "a:3 4;a+4"
+        (POk [[Var "a"; Colon; IntList [3; 4]]; [Var "a"; Plus; Int 4]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [7; 8])))
+
+[<Fact>]
+let ``Int plus int list var`` () =
+    testLine
+        "a:3 4;4+a"
+        (POk [[Var "a"; Colon; IntList [3; 4]]; [Int 4; Plus; Var "a"]])
+        (IOk (Some IntListType))
+        (EOk (Some (IntListValue [7; 8])))

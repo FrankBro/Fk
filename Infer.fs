@@ -26,6 +26,16 @@ let inferPlus env rhs exprs =
                 raise (FkException (UndefinedVar name))
             | Some IntType ->
                 IntType, exprs
+            | Some IntListType ->
+                IntListType, exprs
+            | Some lhs ->
+                raise (FkException (WrongType (IntType, lhs)))
+        | Var name, IntListType ->
+            match Map.tryFind name env with
+            | None ->
+                raise (FkException (UndefinedVar name))
+            | Some IntType ->
+                IntListType, exprs
             | Some lhs ->
                 raise (FkException (WrongType (IntType, lhs)))
         | Int _, IntType ->
