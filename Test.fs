@@ -64,9 +64,25 @@ let ``Semicolon`` () =
         (EOk (Some (IntValue 4)))
 
 [<Fact>]
-let ``Var`` () =
+let ``Var set and get`` () =
     testLine
         "a:3;a"
         (POk [[Var "a"; Colon; Int 3]; [Var "a"]])
         (IOk (Some IntType))
         (EOk (Some (IntValue 3)))
+
+[<Fact>]
+let ``Var plus int`` () =
+    testLine
+        "a:3;a+4"
+        (POk [[Var "a"; Colon; Int 3]; [Var "a"; Plus; Int 4]])
+        (IOk (Some IntType))
+        (EOk (Some (IntValue 7)))
+
+[<Fact>]
+let ``Int plus var`` () =
+    testLine
+        "a:3;4+a"
+        (POk [[Var "a"; Colon; Int 3]; [Int 4; Plus; Var "a"]])
+        (IOk (Some IntType))
+        (EOk (Some (IntValue 7)))

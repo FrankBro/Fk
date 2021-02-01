@@ -11,8 +11,8 @@ type Expr =
 let isValueExpr expr =
     match expr with
     | Int _ 
-    | IntList _ -> true
-    | Var _
+    | IntList _ 
+    | Var _ -> true
     | SemiColon
     | Colon
     | Plus -> false
