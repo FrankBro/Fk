@@ -2,6 +2,7 @@ module Test
 
 open Xunit
 
+open Error
 open Eval
 open Expr
 open Infer
@@ -134,3 +135,11 @@ let ``Int list plus int list`` () =
         (POk [[IntList [1; 2; 3]; Plus; IntList [4; 5; 6]]])
         (IOk (Some IntListType))
         (EOk (Some (IntListValue [5; 7; 9])))
+
+[<Fact>]
+let ``Length mismatch int list plus int list`` () =
+    testLine
+        "1 2 3+4 5"
+        (POk [[IntList [1; 2; 3]; Plus; IntList [4; 5]]])
+        (IOk (Some IntListType))
+        (EFail (LengthMismatch (IntList [1; 2; 3], Plus, IntListValue [4; 5])))
