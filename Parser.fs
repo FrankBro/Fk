@@ -39,9 +39,9 @@ let parseVar =
     
 
 let parseExpr : Parser<Expr> = choice [
-    str ";" >>% SemiColon
-    str ":" >>% Colon
-    str "+" >>% Plus
+    pchar ';' >>% SemiColon
+    pchar ':' >>% Colon
+    pchar '+' >>% Plus
     attempt parseIntList
     parseInt
     parseVar
